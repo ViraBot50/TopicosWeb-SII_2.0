@@ -1,16 +1,16 @@
 import api from "./api";
 
 export const getCalificaciones = async () => {
-  const response = await api.get("/movil/estudiante/calificaciones");
-  return response.data.data;
+  const { data } = await api.get("/academico/calificaciones");
+  return data.data;
 };
 
 export const getKardex = async () => {
-  const response = await api.get("/movil/estudiante/kardex");
-  return response.data.data;
+  const { data } = await api.get("/academico/kardex");
+  return data.data;
 };
 
 export const getHorarios = async () => {
-  const response = await api.get("/movil/estudiante/horarios");
-  return response.data.data;
+  const { data } = await api.get("/academico/horarios");
+  return data.data;
 };

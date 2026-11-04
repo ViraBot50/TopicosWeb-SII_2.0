@@ -13,7 +13,7 @@ export default function Calificaciones() {
     const cargarCalificaciones = async () => {
       try {
         const response = await api.get(
-          "/movil/estudiante/calificaciones"
+          "/academico/calificaciones"
         );
 
         if (!response.data?.flag) {

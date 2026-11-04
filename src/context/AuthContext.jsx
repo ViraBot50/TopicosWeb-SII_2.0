@@ -1,38 +1,55 @@
-
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
 import {
   login as loginService,
   logout as logoutService,
+  checkSession,
 } from "../services/auth.service";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        await checkSession();
+        setAuthenticated(true);
+      } catch (error) {
+        setAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifySession();
+  }, []);
 
   const login = async (email, password) => {
     setLoading(true);
 
     try {
       const data = await loginService(email, password);
-
       setAuthenticated(true);
-
       return data;
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    logoutService();
-    setAuthenticated(false);
+  const logout = async () => {
+    try {
+      await logoutService();
+    } finally {
+      setAuthenticated(false);
+    }
   };
 
   return (

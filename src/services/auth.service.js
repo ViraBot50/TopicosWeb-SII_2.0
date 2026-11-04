@@ -1,26 +1,19 @@
-
-import api, { setAuthToken } from "./api";
+import api from "./api";
 
 export const login = async (email, password) => {
-  const response = await api.post("/login", {
+  const response = await api.post("/auth/login", {
     email,
     password,
   });
 
-  const data = response.data;
-  const token = data.message?.login?.token;
-
-  if (data.flag !== "success" || !token) {
-    throw new Error(
-      "No fue posible autenticar al estudiante."
-    );
-  }
-
-  setAuthToken(token);
-
-  return data;
+  return response.data;
 };
 
-export const logout = () => {
-  setAuthToken(null);
+export const logout = async () => {
+  await api.post("/auth/logout");
+};
+
+export const checkSession = async () => {
+  const response = await api.get("/auth/session");
+  return response.data;
 };

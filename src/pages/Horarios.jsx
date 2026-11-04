@@ -21,7 +21,7 @@ export default function Horarios() {
   useEffect(() => {
     const cargarHorario = async () => {
       try {
-        const response = await api.get("/movil/estudiante/horarios");
+        const response = await api.get("/academico/horarios");
 
         if (!response.data?.flag) {
           throw new Error("No se pudo obtener el horario.");
