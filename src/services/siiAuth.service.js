@@ -19,7 +19,14 @@ export async function loginInstitutional(email, password) {
       body: JSON.stringify({ email, password }),
       signal: AbortSignal.timeout(15000)
     });
+
+    console.log("[SII] URL:", loginUrl);
+    console.log("[SII] HTTP:", response.status);
+    console.log("[SII] OK:", response.ok);
+
   } catch (error) {
+    console.error("[SII] Error de conexión:", error.message);
+
     if (error.name === 'TimeoutError') {
       throw Object.assign(
         new Error('El SII tardó demasiado en responder.'),
@@ -49,7 +56,6 @@ export async function loginInstitutional(email, password) {
     );
   }
 
-  // Estructura real de respuesta del SII.
   const token = data?.message?.login?.token;
 
   if (typeof token !== 'string' || !token.trim()) {

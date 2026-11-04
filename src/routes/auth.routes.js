@@ -71,8 +71,9 @@ router.post('/login', verifyOrigin, async (req, res) => {
         email: req.session.email
       }
     });
-  } catch (error) {
-    console.error('Error en login:', error.message);
+    } catch (error) {
+    console.error("[AUTH] Error:", error.message);
+    console.error("[AUTH] Código:", error.status);
 
     return res.status(error.status || 500).json({
       mensaje: error.status

@@ -16,7 +16,9 @@ export async function getAcademicData(endpoint, token) {
       },
       signal: AbortSignal.timeout(15000)
     });
-
+    console.log('[SII ACADÉMICO] URL:', `${apiUrl}${endpoint}`);
+    console.log('[SII ACADÉMICO] Endpoint:', endpoint);
+    console.log('[SII ACADÉMICO] HTTP:', response.status);
     const data = await response.json().catch(() => null);
 
     return {
