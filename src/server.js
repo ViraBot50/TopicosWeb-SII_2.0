@@ -10,7 +10,6 @@ import academicRoutes from './routes/academic.routes.js';
 const { Pool } = pg;
 
 const requiredVariables = [
-  'PORT',
   'FRONTEND_URL',
   'SII_BASE_URL',
   'SESSION_SECRET',
@@ -111,7 +110,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/academico', academicRoutes);
 
 // Iniciar servidor.
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
   console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
 });
