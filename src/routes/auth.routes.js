@@ -20,6 +20,21 @@ function verifyOrigin(req, res, next) {
   next();
 }
 
+async function checkIsAdmin(req) {
+  const result = await req.app.locals.pool.query(
+    `SELECT EXISTS (
+       SELECT 1
+       FROM public.admin_users
+       WHERE LOWER(email) = LOWER($1)
+         AND active = TRUE
+     ) AS is_admin`,
+    [req.session.email]
+  );
+
+  return result.rows[0].is_admin;
+}
+
+
 // POST /api/auth/login
 router.post('/login', verifyOrigin, async (req, res) => {
   const { email, password } = req.body ?? {};
@@ -64,14 +79,25 @@ router.post('/login', verifyOrigin, async (req, res) => {
       });
     });
 
+    // Consultar si el usuario tiene permisos de administrador.
+    let isAdmin = false;
+
+    try {
+      isAdmin = await checkIsAdmin(req);
+    } catch (error) {
+      console.error('Error consultando rol:', error.message);
+    }
+
+    // Responder con la información del usuario y su rol.
     return res.json({
       autenticado: true,
       mensaje: 'Inicio de sesión exitoso.',
       usuario: {
-        email: req.session.email
+        email: req.session.email,
+        administrador: isAdmin
       }
     });
-    } catch (error) {
+  } catch (error) {
     console.error("[AUTH] Error:", error.message);
     console.error("[AUTH] Código:", error.status);
 
@@ -83,17 +109,36 @@ router.post('/login', verifyOrigin, async (req, res) => {
   }
 });
 
-// GET /api/auth/session
-router.get('/session', (req, res) => {
-  res.json({
-    autenticado: Boolean(
-      req.session?.authenticated &&
-      req.session?.siiTokenEncrypted
-    ),
-    usuario: req.session?.authenticated
-      ? { email: req.session.email }
-      : null
-  });
+router.get('/session', async (req, res) => {
+  const autenticado = Boolean(
+    req.session?.authenticated &&
+    req.session?.siiTokenEncrypted
+  );
+
+  if (!autenticado) {
+    return res.json({
+      autenticado: false,
+      usuario: null
+    });
+  }
+
+  try {
+    const isAdmin = await checkIsAdmin(req);
+
+    return res.json({
+      autenticado: true,
+      usuario: {
+        email: req.session.email,
+        administrador: isAdmin
+      }
+    });
+  } catch (error) {
+    console.error('Error consultando rol:', error.message);
+
+    return res.status(500).json({
+      mensaje: 'No fue posible consultar los permisos del usuario.'
+    });
+  }
 });
 
 // POST /api/auth/logout

@@ -6,9 +6,11 @@ import connectPgSimple from 'connect-pg-simple';
 import pg from 'pg';
 import authRoutes from './routes/auth.routes.js';
 import academicRoutes from './routes/academic.routes.js';
+import announcementsRoutes from './routes/announcements.routes.js';
+import adminsRoutes from './routes/admins.routes.js';
 
 const { Pool } = pg;
-
+// Compartir la conexión PostgreSQL con los módulos.
 const requiredVariables = [
   'FRONTEND_URL',
   'SII_BASE_URL',
@@ -38,6 +40,7 @@ const pool = new Pool({
     rejectUnauthorized: false
   }
 });
+app.locals.pool = pool;
 
 pool.on('error', (error) => {
   console.error('Error inesperado en PostgreSQL:', error.message);
@@ -108,6 +111,8 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/academico', academicRoutes);
+app.use('/api/avisos', announcementsRoutes);
+app.use('/api/admins', adminsRoutes);
 
 // Iniciar servidor.
 app.listen(PORT, '0.0.0.0', () => {
