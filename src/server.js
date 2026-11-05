@@ -73,11 +73,11 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
-    maxAge: 8 * 60 * 60 * 1000
-  }
+   httpOnly: true,
+   secure: isProduction,
+   sameSite: isProduction ? 'none' : 'lax',
+   maxAge: 8 * 60 * 60 * 1000
+}
 }));
 
 // Rutas.
