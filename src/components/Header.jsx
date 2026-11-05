@@ -1,4 +1,3 @@
-
 import {
   Menu,
   UserCircle,
@@ -20,6 +19,18 @@ export default function Header({
     await logout();
     navigate("/login", { replace: true });
   };
+
+  // El SII puede devolver la fotografía como Base64
+  // sin el prefijo que necesita el navegador.
+  const foto = typeof student?.foto === "string"
+    ? student.foto.trim()
+    : "";
+
+  const fotoSrc = foto
+    ? foto.startsWith("data:image/")
+      ? foto
+      : `data:image/jpeg;base64,${foto.replace(/\s/g, "")}`
+    : null;
 
   return (
     <header className="header">
@@ -47,24 +58,19 @@ export default function Header({
         <div className="header-divider" />
 
         <div className="header-user">
-          {student?.foto ? (
+          {fotoSrc ? (
             <img
               className="header-avatar"
-              src={student.foto}
+              src={fotoSrc}
               alt="Fotografía del estudiante"
             />
           ) : (
-            <UserCircle size={32} />
+            <UserCircle size={36} />
           )}
 
           <div className="header-user-info">
-            <strong>
-              {student?.persona || "Estudiante"}
-            </strong>
-
-            <span>
-              {student?.numero_control || "Cargando perfil..."}
-            </span>
+            <span>{student?.nombreCompleto}</span>
+            <span>{student?.numeroControl}</span>
           </div>
         </div>
 

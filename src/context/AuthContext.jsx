@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -17,7 +18,42 @@ export function AuthProvider({ children }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const channelRef = useRef(null);
+
+  // Comprobar la sesión y escuchar los cambios
+  // de autenticación de otras pestañas.
   useEffect(() => {
+    const channel =
+      typeof BroadcastChannel !== "undefined"
+        ? new BroadcastChannel("sii-auth")
+        : null;
+
+    channelRef.current = channel;
+
+    // Otra pestaña cerró la sesión.
+    if (channel) {
+      channel.onmessage = (event) => {
+        if (event.data?.type === "logout") {
+          setAuthenticated(false);
+        }
+      };
+    }
+
+    // El backend rechazó una petición con HTTP 401.
+    const handleUnauthorized = () => {
+      setAuthenticated(false);
+
+      channel?.postMessage({
+        type: "logout",
+      });
+    };
+
+    window.addEventListener(
+      "auth:unauthorized",
+      handleUnauthorized
+    );
+
+    // Comprobar si existe una sesión válida.
     const verifySession = async () => {
       try {
         await checkSession();
@@ -30,6 +66,16 @@ export function AuthProvider({ children }) {
     };
 
     verifySession();
+
+    return () => {
+      window.removeEventListener(
+        "auth:unauthorized",
+        handleUnauthorized
+      );
+
+      channel?.close();
+      channelRef.current = null;
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -37,7 +83,9 @@ export function AuthProvider({ children }) {
 
     try {
       const data = await loginService(email, password);
+
       setAuthenticated(true);
+
       return data;
     } finally {
       setLoading(false);
@@ -47,8 +95,18 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await logoutService();
+    } catch (error) {
+      console.error(
+        "Error al cerrar sesión:",
+        error.message
+      );
     } finally {
       setAuthenticated(false);
+
+      // Avisar a las demás pestañas.
+      channelRef.current?.postMessage({
+        type: "logout",
+      });
     }
   };
 
