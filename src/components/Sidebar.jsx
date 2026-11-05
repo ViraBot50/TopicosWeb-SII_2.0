@@ -7,6 +7,7 @@ import {
   ClipboardList,
   CalendarDays,
   BookOpen,
+  Megaphone,
   X,
 } from "lucide-react";
 
@@ -30,6 +31,11 @@ const menuItems = [
     name: "Horarios",
     path: "/horarios",
     icon: CalendarDays,
+  },
+  {
+    name: "Muro de avisos",
+    path: "/avisos",
+    icon: Megaphone,
   },
 ];
 

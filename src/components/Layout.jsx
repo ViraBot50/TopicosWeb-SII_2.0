@@ -13,6 +13,8 @@ const pageTitles = {
   "/calificaciones": "Calificaciones",
   "/kardex": "Kardex académico",
   "/horarios": "Horario escolar",
+  "/avisos": "Muro de avisos",
+  "/avisos/crear": "Publicar aviso",
 };
 
 export default function Layout() {
@@ -24,7 +26,10 @@ export default function Layout() {
   const location = useLocation();
 
   const title =
-    pageTitles[location.pathname] || "Portal académico";
+    pageTitles[location.pathname] ||
+    (location.pathname.startsWith("/avisos/")
+      ? "Avisos"
+      : "Portal académico");
 
   useEffect(() => {
     let active = true;
