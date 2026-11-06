@@ -1,5 +1,6 @@
 
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 import {
   LayoutDashboard,
@@ -8,6 +9,7 @@ import {
   CalendarDays,
   BookOpen,
   Megaphone,
+  ShieldCheck,
   X,
 } from "lucide-react";
 
@@ -40,6 +42,8 @@ const menuItems = [
 ];
 
 export default function Sidebar({ open, onClose }) {
+  const { isAdmin } = useAuth();
+
   return (
     <>
       {open && (
@@ -94,6 +98,19 @@ export default function Sidebar({ open, onClose }) {
                 </NavLink>
               );
             })}
+
+            {isAdmin && (
+              <NavLink
+                to="/admins"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive ? "active" : ""}`
+                }
+              >
+                <ShieldCheck size={20} />
+                <span>Administradores</span>
+              </NavLink>
+            )}
           </nav>
         </div>
 
