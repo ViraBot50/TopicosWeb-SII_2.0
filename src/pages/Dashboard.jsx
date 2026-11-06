@@ -77,35 +77,36 @@ export default function Dashboard() {
 
       <section className="student-card">
         <h3>Información del estudiante</h3>
+        <br/>
 
         <div className="student-details">
           <div>
-            <span>Nombre completo</span>
+            <span>Nombre completo: </span>
             <strong>{student.persona}</strong>
           </div>
 
           <div>
-            <span>Número de control</span>
+            <span>Número de control: </span>
             <strong>{student.numero_control}</strong>
           </div>
 
           <div>
-            <span>Correo institucional</span>
+            <span>Correo institucional: </span>
             <strong>{student.email}</strong>
           </div>
 
           <div>
-            <span>Materias aprobadas</span>
+            <span>Materias aprobadas: </span>
             <strong>{student.materias_aprobadas}</strong>
           </div>
 
           <div>
-            <span>Materias reprobadas</span>
+            <span>Materias reprobadas: </span>
             <strong>{student.materias_reprobadas}</strong>
           </div>
 
           <div>
-            <span>Créditos complementarios</span>
+            <span>Créditos complementarios: </span>
             <strong>{student.creditos_complementarios}</strong>
           </div>
         </div>

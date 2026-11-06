@@ -1,10 +1,12 @@
 
 /* =========================================
-   MURO DE AVISOS - ESTILOS AISLADOS
+   MURO DE AVISOS - ESTILOS GENERALES
 ========================================= */
 
 .avisos-container,
-.avisos-container * {
+.avisos-container *,
+.aviso-detalle-container,
+.aviso-detalle-container * {
   box-sizing: border-box;
 }
 
@@ -16,7 +18,9 @@
   color: #e2e8f0;
 }
 
-/* ENCABEZADO */
+/* =========================================
+   ENCABEZADO DEL MURO
+========================================= */
 
 .avisos-container .avisos-heading {
   display: flex;
@@ -61,7 +65,9 @@
   line-height: 1.5;
 }
 
-/* BOTÓN PUBLICAR */
+/* =========================================
+   BOTÓN PUBLICAR
+========================================= */
 
 .avisos-container a.avisos-create-button {
   display: inline-flex;
@@ -95,7 +101,9 @@
   flex-shrink: 0;
 }
 
-/* BUSCADOR */
+/* =========================================
+   BUSCADOR
+========================================= */
 
 .avisos-container .avisos-toolbar {
   display: flex;
@@ -148,7 +156,9 @@
   white-space: nowrap;
 }
 
-/* FILTROS */
+/* =========================================
+   FILTROS
+========================================= */
 
 .avisos-container .avisos-filters {
   display: flex;
@@ -189,7 +199,9 @@
   color: #93c5fd;
 }
 
-/* TÍTULO DE RESULTADOS */
+/* =========================================
+   RESULTADOS
+========================================= */
 
 .avisos-container .avisos-results {
   width: 100%;
@@ -215,7 +227,9 @@
   font-size: 12px;
 }
 
-/* CUADRÍCULA DE AVISOS */
+/* =========================================
+   CUADRÍCULA DE AVISOS
+========================================= */
 
 .avisos-container .avisos-grid {
   display: grid;
@@ -224,7 +238,9 @@
   width: 100%;
 }
 
-/* TARJETAS */
+/* =========================================
+   TARJETAS DE AVISOS
+========================================= */
 
 .avisos-container .aviso-item {
   display: flex;
@@ -252,6 +268,10 @@
   margin-bottom: 16px;
 }
 
+/* =========================================
+   CATEGORÍAS
+========================================= */
+
 .avisos-container .aviso-category {
   display: inline-block;
   padding: 5px 10px;
@@ -270,12 +290,12 @@
   color: #d8b4fe;
 }
 
-.avisos-container .category-comunidad {
+.avisos-container .category-general {
   background: rgba(22, 163, 74, 0.2);
   color: #86efac;
 }
 
-.avisos-container .category-material_estudio {
+.avisos-container .category-servicios {
   background: rgba(234, 88, 12, 0.2);
   color: #fdba74;
 }
@@ -284,6 +304,10 @@
   background: #334155;
   color: #cbd5e1;
 }
+
+/* =========================================
+   FECHA Y DESCRIPCIÓN
+========================================= */
 
 .avisos-container .aviso-date {
   display: inline-flex;
@@ -313,7 +337,9 @@
   -webkit-box-orient: vertical;
 }
 
-/* AUTOR Y ENLACE */
+/* =========================================
+   AUTOR Y ENLACE
+========================================= */
 
 .avisos-container .aviso-item-footer {
   display: flex;
@@ -382,7 +408,9 @@
   color: #93c5fd;
 }
 
-/* ESTADO VACÍO */
+/* =========================================
+   ESTADO VACÍO Y ERRORES
+========================================= */
 
 .avisos-container .avisos-empty {
   width: 100%;
@@ -406,7 +434,313 @@
   font-size: 13px;
 }
 
-/* RESPONSIVE */
+.avisos-container .avisos-empty button {
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.avisos-container .avisos-empty button:hover {
+  background: #1d4ed8;
+}
+
+/* =========================================
+   DETALLE DEL AVISO
+========================================= */
+
+.aviso-detalle-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #e2e8f0;
+}
+
+/* REGRESAR */
+
+.aviso-detalle-container .aviso-detalle-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: #60a5fa;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.aviso-detalle-container .aviso-detalle-back:hover {
+  color: #93c5fd;
+}
+
+/* TARJETA PRINCIPAL */
+
+.aviso-detalle-container .aviso-detalle-card {
+  width: 100%;
+  padding: 32px;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  background: #1e293b;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* CATEGORÍA Y FECHA */
+
+.aviso-detalle-container .aviso-detalle-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.aviso-detalle-container .aviso-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.aviso-detalle-container .category-academico {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+
+.aviso-detalle-container .category-eventos {
+  background: rgba(147, 51, 234, 0.2);
+  color: #d8b4fe;
+}
+
+.aviso-detalle-container .category-general {
+  background: rgba(22, 163, 74, 0.2);
+  color: #86efac;
+}
+
+.aviso-detalle-container .category-servicios {
+  background: rgba(234, 88, 12, 0.2);
+  color: #fdba74;
+}
+
+.aviso-detalle-container .category-otros {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.aviso-detalle-container .aviso-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* TÍTULO DEL AVISO */
+
+.aviso-detalle-container .aviso-detalle-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid #334155;
+}
+
+.aviso-detalle-container .aviso-detalle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.aviso-detalle-container .aviso-detalle-heading span {
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.aviso-detalle-container .aviso-detalle-heading h1 {
+  margin: 7px 0 0;
+  color: #f1f5f9;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* CONTENIDO */
+
+.aviso-detalle-container .aviso-detalle-content {
+  min-height: 120px;
+  padding: 30px 0;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* AUTOR */
+
+.aviso-detalle-container .aviso-detalle-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid #334155;
+}
+
+.aviso-detalle-container .aviso-author-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.aviso-detalle-container .aviso-detalle-author strong,
+.aviso-detalle-container .aviso-detalle-author small {
+  display: block;
+}
+
+.aviso-detalle-container .aviso-detalle-author strong {
+  color: #f1f5f9;
+  font-size: 13px;
+}
+
+.aviso-detalle-container .aviso-detalle-author small {
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+/* ACTUALIZACIÓN */
+
+.aviso-detalle-container .aviso-detalle-updated {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+/* =========================================
+   BOTONES DE ADMINISTRADOR
+========================================= */
+
+.aviso-detalle-container .aviso-detalle-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #334155;
+}
+
+.aviso-detalle-container .aviso-detalle-edit,
+.aviso-detalle-container .aviso-detalle-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aviso-detalle-container .aviso-detalle-edit {
+  border-color: #3b82f6;
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+}
+
+.aviso-detalle-container .aviso-detalle-edit:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.aviso-detalle-container .aviso-detalle-delete {
+  border-color: #991b1b;
+  background: rgba(220, 38, 38, 0.12);
+  color: #fca5a5;
+}
+
+.aviso-detalle-container .aviso-detalle-delete:hover {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.aviso-detalle-container .aviso-detalle-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   MENSAJES DEL DETALLE
+========================================= */
+
+.aviso-detalle-container .aviso-detalle-message {
+  width: 100%;
+  padding: 45px 20px;
+  border: 1px dashed #475569;
+  border-radius: 12px;
+  background: #1e293b;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.aviso-detalle-container .aviso-detalle-message h2 {
+  color: #f1f5f9;
+  font-size: 18px;
+}
+
+.aviso-detalle-container .aviso-detalle-message p {
+  font-size: 13px;
+}
+
+.aviso-detalle-container .aviso-detalle-message.error {
+  border-color: #991b1b;
+}
+
+.aviso-detalle-container .aviso-detalle-error {
+  margin-top: 15px;
+  padding: 12px;
+  border: 1px solid #991b1b;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.12);
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+/* =========================================
+   RESPONSIVE - MURO Y DETALLE
+========================================= */
 
 @media (max-width: 900px) {
   .avisos-container .avisos-grid {
@@ -448,5 +782,36 @@
 
   .avisos-container .aviso-item-footer {
     flex-wrap: wrap;
+  }
+
+  .aviso-detalle-container {
+    padding: 16px;
+  }
+
+  .aviso-detalle-container .aviso-detalle-card {
+    padding: 20px;
+  }
+
+  .aviso-detalle-container .aviso-detalle-heading {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .aviso-detalle-container .aviso-detalle-heading h1 {
+    font-size: 21px;
+  }
+
+  .aviso-detalle-container .aviso-detalle-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .aviso-detalle-container .aviso-detalle-actions {
+    flex-direction: column;
+  }
+
+  .aviso-detalle-container .aviso-detalle-edit,
+  .aviso-detalle-container .aviso-detalle-delete {
+    width: 100%;
   }
 }

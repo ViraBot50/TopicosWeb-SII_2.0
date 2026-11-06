@@ -1,6 +1,8 @@
 
+import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   GraduationCap,
   LockKeyhole,
@@ -12,8 +14,6 @@ import {
   Cpu,
 } from "lucide-react";
 
-import { useAuth } from "../context/AuthContext";
-
 export default function Login() {
   const navigate = useNavigate();
   const { login, loading } = useAuth();
@@ -22,6 +22,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,16 +34,27 @@ export default function Login() {
     }
 
     try {
-      await login(email.trim(), password);
+      setSubmitting(true);
+
+      const usuario = await login(email.trim(), password);
+
+      console.log("Usuario autenticado:", usuario);
+      console.log("Redirigiendo al dashboard...");
+
       navigate("/dashboard", { replace: true });
+
     } catch (err) {
       console.error("Error de autenticación:", err);
 
       setError(
+        err.response?.data?.mensaje ||
         err.response?.data?.message ||
         err.message ||
         "No fue posible iniciar sesión. Verifica tus credenciales."
       );
+
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -201,13 +213,17 @@ export default function Login() {
               <button
                 type="submit"
                 className="login-submit"
-                disabled={loading}
+                disabled={loading || submitting}
               >
                 <span>
-                  {loading ? "Verificando..." : "Acceder al portal"}
+                  {loading || submitting
+                    ? "Verificando..."
+                    : "Acceder al portal"}
                 </span>
 
-                {!loading && <ArrowRight size={19} />}
+                {!loading && !submitting && (
+                  <ArrowRight size={19} />
+                )}
               </button>
             </form>
 

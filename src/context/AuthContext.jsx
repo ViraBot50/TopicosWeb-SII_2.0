@@ -1,122 +1,85 @@
+
 import {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 
-import {
-  login as loginService,
-  logout as logoutService,
-  checkSession,
-} from "../services/auth.service";
+import api from "../services/api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const channelRef = useRef(null);
+  const isAuthenticated = Boolean(user);
+  const isAdmin = Boolean(user?.administrador);
 
-  // Comprobar la sesión y escuchar los cambios
-  // de autenticación de otras pestañas.
-  useEffect(() => {
-    const channel =
-      typeof BroadcastChannel !== "undefined"
-        ? new BroadcastChannel("sii-auth")
-        : null;
+  const checkSession = async () => {
+    try {
+      const { data } = await api.get("/auth/session");
 
-    channelRef.current = channel;
-
-    // Otra pestaña cerró la sesión.
-    if (channel) {
-      channel.onmessage = (event) => {
-        if (event.data?.type === "logout") {
-          setAuthenticated(false);
-        }
-      };
-    }
-
-    // El backend rechazó una petición con HTTP 401.
-    const handleUnauthorized = () => {
-      setAuthenticated(false);
-
-      channel?.postMessage({
-        type: "logout",
-      });
-    };
-
-    window.addEventListener(
-      "auth:unauthorized",
-      handleUnauthorized
-    );
-
-    // Comprobar si existe una sesión válida.
-    const verifySession = async () => {
-      try {
-        await checkSession();
-        setAuthenticated(true);
-      } catch (error) {
-        setAuthenticated(false);
-      } finally {
-        setLoading(false);
+      if (data.autenticado && data.usuario) {
+        setUser(data.usuario);
+        return data.usuario;
       }
-    };
 
-    verifySession();
-
-    return () => {
-      window.removeEventListener(
-        "auth:unauthorized",
-        handleUnauthorized
+      setUser(null);
+      return null;
+    } catch (error) {
+      console.error(
+        "Error verificando sesión:",
+        error.response?.data?.mensaje || error.message
       );
 
-      channel?.close();
-      channelRef.current = null;
-    };
-  }, []);
-
-  const login = async (email, password) => {
-    setLoading(true);
-
-    try {
-      const data = await loginService(email, password);
-
-      setAuthenticated(true);
-
-      return data;
+      setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const login = async (email, password) => {
+    const { data } = await api.post("/auth/login", {
+      email,
+      password,
+    });
+
+    if (!data.autenticado || !data.usuario) {
+      throw new Error(
+        data.mensaje || "No fue posible iniciar sesión."
+      );
+    }
+
+    setUser(data.usuario);
+
+    return data.usuario;
+  };
+
   const logout = async () => {
     try {
-      await logoutService();
-    } catch (error) {
-      console.error(
-        "Error al cerrar sesión:",
-        error.message
-      );
+      await api.post("/auth/logout");
     } finally {
-      setAuthenticated(false);
-
-      // Avisar a las demás pestañas.
-      channelRef.current?.postMessage({
-        type: "logout",
-      });
+      setUser(null);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        authenticated,
+        user,
+        isAdmin,
+        isAuthenticated,
         loading,
         login,
         logout,
+        checkSession,
       }}
     >
       {children}
@@ -129,7 +92,7 @@ export function useAuth() {
 
   if (!context) {
     throw new Error(
-      "useAuth debe utilizarse dentro de AuthProvider"
+      "useAuth debe utilizarse dentro de AuthProvider."
     );
   }
 

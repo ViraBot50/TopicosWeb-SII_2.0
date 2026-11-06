@@ -1,6 +1,8 @@
 
-import { useMemo, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import {
   Search,
   Plus,
@@ -10,77 +12,73 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import "./Avisos.css";
+import { getAvisos } from "../../services/avisos.service";
 
-const avisosDemo = [
-  {
-    id: "1",
-    title: "Cancelación de clase",
-    content:
-      "Se informa a los estudiantes que la clase de hoy a las 18:00 horas queda cancelada. Favor de mantenerse atentos a nuevos avisos.",
-    category: "academico",
-    author_name: "Coordinación académica",
-    author_email: "academico@celaya.tecnm.mx",
-    control_number: "Administración",
-    created_at: "2026-11-04T15:30:00.000Z",
-  },
-  {
-    id: "2",
-    title: "Semana de actividades culturales",
-    content:
-      "Se invita a toda la comunidad estudiantil a participar en las actividades culturales que se realizarán durante esta semana en las instalaciones del instituto.",
-    category: "eventos",
-    author_name: "Comunidad ITC",
-    author_email: "comunidad@celaya.tecnm.mx",
-    control_number: "Organización",
-    created_at: "2026-11-03T12:00:00.000Z",
-  },
-  {
-    id: "3",
-    title: "Material de estudio disponible",
-    content:
-      "Se comparte información sobre recursos de apoyo para las próximas evaluaciones. Consulta los materiales con tus docentes.",
-    category: "material_estudio",
-    author_name: "Representante estudiantil",
-    author_email: "alumno@celaya.tecnm.mx",
-    control_number: "23030000",
-    created_at: "2026-11-02T10:00:00.000Z",
-  },
-  {
-    id: "4",
-    title: "Convocatoria para estudiantes",
-    content:
-      "Se encuentra abierta la convocatoria para participar en las actividades de integración de nuestra comunidad estudiantil.",
-    category: "comunidad",
-    author_name: "Comunidad ITC",
-    author_email: "comunidad@celaya.tecnm.mx",
-    control_number: "Organización",
-    created_at: "2026-11-01T09:00:00.000Z",
-  },
-];
+import "./Avisos.css";
 
 const categories = [
   { value: "todos", label: "Todos" },
   { value: "academico", label: "Académico" },
   { value: "eventos", label: "Eventos" },
-  { value: "comunidad", label: "Comunidad" },
-  { value: "material_estudio", label: "Material de estudio" },
+  { value: "general", label: "General" },
+  { value: "servicios", label: "Servicios" },
   { value: "otros", label: "Otros" },
 ];
 
 const categoryLabels = {
   academico: "Académico",
   eventos: "Eventos",
-  comunidad: "Comunidad",
-  material_estudio: "Material de estudio",
+  general: "General",
+  servicios: "Servicios",
   otros: "Otros",
 };
 
 export default function Avisos() {
-  const [avisos] = useState(avisosDemo);
+  const [avisos, setAvisos] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("todos");
 
+  const [loadingAvisos, setLoadingAvisos] = useState(true);
+  const [error, setError] = useState("");
+
+  const { isAdmin, loading } = useAuth();
+
+  // Consultar los avisos del backend.
+  const cargarAvisos = async () => {
+    try {
+      setLoadingAvisos(true);
+      setError("");
+
+      const response = await getAvisos();
+
+      if (response.success === false) {
+        throw new Error(
+          response.message || "No fue posible obtener los avisos."
+        );
+      }
+
+      setAvisos(
+        Array.isArray(response.data) ? response.data : []
+      );
+    } catch (err) {
+      console.error("Error al cargar avisos:", err);
+
+      setError(
+        err.response?.data?.mensaje ||
+        err.response?.data?.message ||
+        err.message ||
+        "No fue posible cargar los avisos."
+      );
+    } finally {
+      setLoadingAvisos(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarAvisos();
+  }, []);
+
+  // Aplicar búsqueda y filtros.
   const filteredAvisos = useMemo(() => {
     return avisos.filter((aviso) => {
       const matchesCategory =
@@ -89,15 +87,27 @@ export default function Avisos() {
       const searchText = search.toLowerCase();
 
       const matchesSearch =
-        aviso.title.toLowerCase().includes(searchText) ||
-        aviso.content.toLowerCase().includes(searchText);
+        String(aviso.title || "")
+          .toLowerCase()
+          .includes(searchText) ||
+        String(aviso.content || "")
+          .toLowerCase()
+          .includes(searchText);
 
       return matchesCategory && matchesSearch;
     });
   }, [avisos, category, search]);
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("es-MX", {
+    if (!date) return "Fecha no disponible";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "Fecha no disponible";
+    }
+
+    return parsedDate.toLocaleDateString("es-MX", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -123,10 +133,15 @@ export default function Avisos() {
           </div>
         </div>
 
-        <Link to="/avisos/crear" className="avisos-create-button">
-          <Plus size={19} />
-          <span>Publicar aviso</span>
-        </Link>
+        {!loading && isAdmin && (
+          <Link
+            to="/avisos/crear"
+            className="avisos-create-button"
+          >
+            <Plus size={19} />
+            <span>Publicar aviso</span>
+          </Link>
+        )}
       </section>
 
       {/* Búsqueda */}
@@ -170,7 +185,26 @@ export default function Avisos() {
           <span>Información de la comunidad ITC</span>
         </div>
 
-        {filteredAvisos.length === 0 ? (
+        {loadingAvisos ? (
+          <div className="avisos-empty">
+            <Megaphone size={35} />
+            <h3>Cargando avisos...</h3>
+            <p>Estamos consultando las publicaciones.</p>
+          </div>
+        ) : error ? (
+          <div className="avisos-empty">
+            <Megaphone size={35} />
+            <h3>No fue posible cargar los avisos</h3>
+            <p>{error}</p>
+
+            <button
+              type="button"
+              onClick={cargarAvisos}
+            >
+              Intentar nuevamente
+            </button>
+          </div>
+        ) : filteredAvisos.length === 0 ? (
           <div className="avisos-empty">
             <Megaphone size={35} />
             <h3>No se encontraron avisos</h3>
@@ -209,9 +243,12 @@ export default function Avisos() {
                     </div>
 
                     <div>
-                      <strong>{aviso.author_name}</strong>
+                      <strong>
+                        {aviso.author_name || "Comunidad ITC"}
+                      </strong>
+
                       <small>
-                        {aviso.control_number || aviso.author_email}
+                        {aviso.control_number || aviso.author_email || ""}
                       </small>
                     </div>
                   </div>

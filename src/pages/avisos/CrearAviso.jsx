@@ -1,6 +1,8 @@
 
+import { Navigate, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+
 import {
   ArrowLeft,
   Send,
@@ -8,6 +10,8 @@ import {
   Tag,
   AlignLeft,
 } from "lucide-react";
+
+import { crearAviso } from "../../services/avisos.service";
 
 import "./CrearAviso.css";
 
@@ -20,8 +24,8 @@ const initialForm = {
 const categories = [
   { value: "academico", label: "Académico" },
   { value: "eventos", label: "Eventos" },
-  { value: "comunidad", label: "Comunidad" },
-  { value: "material_estudio", label: "Material de estudio" },
+  { value: "general", label: "General" },
+  { value: "servicios", label: "Servicios" },
   { value: "otros", label: "Otros" },
 ];
 
@@ -30,6 +34,17 @@ export default function CrearAviso() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [publishing, setPublishing] = useState(false);
+
+  const { isAdmin, loading } = useAuth();
+  const navigate = useNavigate();
+
+  if (loading) {
+    return <p>Verificando permisos...</p>;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/avisos" replace />;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,21 +84,35 @@ export default function CrearAviso() {
       setError("");
       setSuccess("");
 
-      // Pendiente: conectar con el backend.
-      // await crearAviso({ title, content, category: form.category });
-
-      console.log("Aviso preparado:", {
+      const response = await crearAviso({
         title,
         content,
         category: form.category,
       });
 
-      setSuccess(
-        "El formulario es válido. La publicación estará disponible cuando conectemos el backend."
-      );
+      if (response.success === false) {
+        throw new Error(
+          response.message || response.mensaje || "No fue posible publicar el aviso."
+        );
+      }
+
+      setSuccess("¡Aviso publicado correctamente!");
+
+      // Regresar al muro para consultar el aviso recién creado.
+      navigate("/avisos", {
+        replace: true,
+        state: { avisoCreado: true },
+      });
+
     } catch (err) {
       console.error("Error al publicar aviso:", err);
-      setError("No fue posible publicar el aviso.");
+
+      setError(
+        err.response?.data?.mensaje ||
+        err.response?.data?.message ||
+        err.message ||
+        "No fue posible publicar el aviso."
+      );
     } finally {
       setPublishing(false);
     }
@@ -225,7 +254,7 @@ export default function CrearAviso() {
             disabled={publishing}
           >
             <Send size={17} />
-            {publishing ? "Procesando..." : "Publicar aviso"}
+            {publishing ? "Publicando..." : "Publicar aviso"}
           </button>
         </div>
       </form>
